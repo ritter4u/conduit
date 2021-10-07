@@ -1,0 +1,150 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.example.conduit.ui
+
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.conduit.data.AppContainer
+import com.example.conduit.ui.ViewModel.UserViewModel
+import com.example.conduit.ui.article.ArticleScreen
+import com.example.conduit.ui.article.ArticleViewModel
+import com.example.conduit.ui.article.ArticleViewModel.Companion.ARTICLE_ID_KEY
+import com.example.conduit.ui.home.HomeScreen
+import com.example.conduit.ui.home.HomeViewModel
+import com.example.conduit.ui.interests.InterestsScreen
+import com.example.conduit.ui.interests.InterestsViewModel
+import com.example.conduit.ui.profile.UpdateProfileScreen
+import com.example.conduit.ui.sign.SignInScreen
+import com.example.conduit.ui.sign.SignUpScreen
+import kotlinx.coroutines.launch
+
+/**
+ * Destinations used in the ([conduitApp]).
+ */
+object MainDestinations {
+    const val HOME_ROUTE = "home"
+    const val INTERESTS_ROUTE = "interests"
+    const val SIGN_IN_ROUTE = "signin"
+    const val SIGN_UP_ROUTE = "signup"
+    const val UPDATE_ROUTE = "update"
+    const val SIGN_OUT_ROUTE = "signout"
+    const val ARTICLE_ROUTE = "post"
+}
+
+@Composable
+fun conduitNavGraph(
+    appContainer: AppContainer,
+    navController: NavHostController = rememberNavController(),
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    startDestination: String = MainDestinations.HOME_ROUTE
+) {
+    val actions = remember(navController) { MainActions(navController) }
+    val coroutineScope = rememberCoroutineScope()
+    val openDrawer: () -> Unit = { coroutineScope.launch { scaffoldState.drawerState.open() } }
+
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        composable(MainDestinations.HOME_ROUTE) {
+            val homeViewModel: HomeViewModel = viewModel(
+                factory = HomeViewModel.provideFactory(appContainer.postsRepository)
+            )
+            HomeScreen(
+                homeViewModel = homeViewModel,
+                navigateToArticle = actions.navigateToArticle,
+                openDrawer = openDrawer
+            )
+        }
+        composable(MainDestinations.INTERESTS_ROUTE) {
+            val interestsViewModel: InterestsViewModel = viewModel(
+                factory = InterestsViewModel.provideFactory(appContainer.interestsRepository)
+            )
+            InterestsScreen(
+                interestsViewModel = interestsViewModel,
+                openDrawer = openDrawer
+            )
+        }
+        composable(MainDestinations.SIGN_IN_ROUTE) {
+            val signInViewModel: UserViewModel = viewModel()
+            SignInScreen(signInViewModel = signInViewModel, openDrawer = openDrawer)
+        }
+        composable(MainDestinations.SIGN_UP_ROUTE) {
+            val signUpViewModel: UserViewModel = viewModel()
+//            SignUpScreen()
+            SignUpScreen(signUpViewModel = signUpViewModel,openDrawer = openDrawer)
+        }
+        composable(MainDestinations.SIGN_UP_ROUTE) {
+            val signUpViewModel: UserViewModel = viewModel()
+//            SignUpScreen()
+            SignUpScreen(signUpViewModel = signUpViewModel,openDrawer = openDrawer)
+        }
+        composable(MainDestinations.UPDATE_ROUTE) {
+            val signUpViewModel: UserViewModel = viewModel()
+//            SignUpScreen()
+            UpdateProfileScreen(userViewModel = signUpViewModel,openDrawer = openDrawer)
+        }
+        composable(MainDestinations.SIGN_OUT_ROUTE) {
+            val interestsViewModel: InterestsViewModel = viewModel(
+//                factory = InterestsViewModel.provideFactory(appContainer.userService)
+            )
+            InterestsScreen(
+                interestsViewModel = interestsViewModel,
+                openDrawer = openDrawer
+            )
+        }
+        composable(
+            route = "${MainDestinations.ARTICLE_ROUTE}/{$ARTICLE_ID_KEY}",
+            arguments = listOf(navArgument(ARTICLE_ID_KEY) { type = NavType.StringType })
+        ) { backStackEntry ->
+            // ArticleVM obtains the articleId via backStackEntry.arguments from SavedStateHandle
+            val articleViewModel: ArticleViewModel = viewModel(
+                factory = ArticleViewModel.provideFactory(
+                    postsRepository = appContainer.postsRepository,
+                    owner = backStackEntry,
+                    defaultArgs = backStackEntry.arguments
+                )
+            )
+            ArticleScreen(
+                articleViewModel = articleViewModel,
+                onBack = actions.upPress
+            )
+        }
+    }
+}
+
+/**
+ * Models the navigation actions in the app.
+ */
+class MainActions(navController: NavHostController) {
+    val navigateToArticle: (String) -> Unit = { postId: String ->
+        navController.navigate("${MainDestinations.ARTICLE_ROUTE}/$postId")
+    }
+    val upPress: () -> Unit = {
+        navController.navigateUp()
+    }
+}
