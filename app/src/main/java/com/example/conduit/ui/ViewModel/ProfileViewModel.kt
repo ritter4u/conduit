@@ -12,12 +12,12 @@ import kotlinx.coroutines.launch
 class ProfileViewModel : ViewModel() {
 
 
-    private val _userResponse= MutableLiveData<User>()
-    val userResponse: LiveData<User> =_userResponse
-    private val _profileResponse= MutableLiveData<Profile>()
-    val profileResponse: LiveData<Profile> =_profileResponse
-    private val _userRes= MutableLiveData<User>()
-    val userRes: LiveData<User> =_userRes
+//    private val _userResponse= MutableLiveData<User>()
+//    val userResponse: LiveData<User> =_userResponse
+//    private val _profileResponse= MutableLiveData<Profile>()
+//    val profileResponse: LiveData<Profile> =_profileResponse
+//    private val _userRes= MutableLiveData<User>()
+//    val userRes: LiveData<User> =_userRes
 
 //    fun setProfile(userName: String,email: String,bio:String,image:String,password:String){
 //        viewModelScope.launch {

@@ -18,11 +18,7 @@ package com.example.conduit.ui.home
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -137,15 +133,12 @@ fun HomeScreen(
             val title = stringResource(id = R.string.app_name)
             InsetAwareTopAppBar(
                 title = {
-                    Text(text = "Conduit")
-//                    Icon(
-//                        painter = painterResource(R.drawable.ic_conduit_wordmark),
-//                        contentDescription = title,
-//                        tint = MaterialTheme.colors.onBackground,
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .padding(bottom = 4.dp, top = 10.dp)
-//                    )
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally){
+                        Text(text = "Conduit")
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = openDrawer) {
@@ -278,9 +271,9 @@ private fun HomeScreenErrorAndContent(
         PostList(posts, navigateToArticle, favorites, onToggleFavorite, modifier, scrollState)
     } else if (!isShowingErrors) {
         // if there are no posts, and no error, let the user refresh manually
-        TextButton(onClick = onRefresh, modifier.fillMaxSize()) {
-            Text(stringResource(id = R.string.home_tap_to_load_content), textAlign = TextAlign.Center)
-        }
+//        TextButton(onClick = onRefresh, modifier.fillMaxSize()) {
+//            Text(stringResource(id = R.string.home_tap_to_load_content), textAlign = TextAlign.Center)
+//        }
     } else {
         // there's currently an error showing, don't show any content
         Box(modifier.fillMaxSize()) { /* empty screen */ }
@@ -306,10 +299,10 @@ private fun PostList(
     modifier: Modifier = Modifier,
     scrollState: LazyListState = rememberLazyListState(),
 ) {
-    val postTop = posts[3]
-    val postsSimple = posts.subList(0, 2)
-    val postsPopular = posts.subList(2, 7)
-    val postsHistory = posts.subList(7, 10)
+//    val postTop = posts[3]
+    val postsSimple = posts.subList(0,posts.lastIndex)
+//    val postsPopular = posts.subList(2, 7)
+//    val postsHistory = posts.subList(7, 10)
 
     LazyColumn(
         modifier = modifier,
@@ -319,10 +312,10 @@ private fun PostList(
             applyTop = false
         )
     ) {
-        item { PostListTopSection(postTop, navigateToArticle) }
+//        item { PostListTopSection(postTop, navigateToArticle) }
         item { PostListSimpleSection(postsSimple, navigateToArticle, favorites, onToggleFavorite) }
-        item { PostListPopularSection(postsPopular, navigateToArticle) }
-        item { PostListHistorySection(postsHistory, navigateToArticle) }
+//        item { PostListPopularSection(postsPopular, navigateToArticle) }
+//        item { PostListHistorySection(postsHistory, navigateToArticle) }
     }
 }
 
@@ -346,19 +339,19 @@ private fun FullScreenLoading() {
  * @param post (state) highlighted post to display
  * @param navigateToArticle (event) request navigation to Article screen
  */
-@Composable
-private fun PostListTopSection(post: Post, navigateToArticle: (String) -> Unit) {
-    Text(
-        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
-        text = stringResource(id = R.string.home_top_section_title),
-        style = MaterialTheme.typography.subtitle1
-    )
-    PostCardTop(
-        post = post,
-        modifier = Modifier.clickable(onClick = { navigateToArticle(post.id) })
-    )
-    PostListDivider()
-}
+//@Composable
+//private fun PostListTopSection(post: Post, navigateToArticle: (String) -> Unit) {
+//    Text(
+//        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
+//        text = stringResource(id = R.string.home_top_section_title),
+//        style = MaterialTheme.typography.subtitle1
+//    )
+//    PostCardTop(
+//        post = post,
+//        modifier = Modifier.clickable(onClick = { navigateToArticle(post.id) })
+//    )
+//    PostListDivider()
+//}
 
 /**
  * Full-width list items for [PostList]
